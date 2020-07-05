@@ -1,0 +1,208 @@
+---
+title: "Applied Linear Algebra"
+author: "Alex Stephenson"
+date: "7/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Chapter 1: Vectors 
+
+A *vector* is an ordered list of numbers. 
+
+```{r}
+vec <- c(-1.1, 0.0, 3.6, -7.2)
+vec
+```
+
+Vectors are equal $a = b$ when they have the same size and same corresponding entries 
+
+```{r}
+
+# Equal 
+a <- c(1,2,3)
+b <- c(1,2,3)
+
+a == b
+
+# Not Equal 
+a2 <- c(1,2,4)
+b2 <- c(2,5,6)
+
+a2 == b2
+```
+
+Block (or stacked) vectors are made by concatenating two or more vectors 
+
+```{r}
+stack <- c(a,b)
+stack
+```
+
+Subvectors are made by slicing a vector into sub-elements. Usually colon notation is used $a_{r:s}$ where the subscript is the *index range*. While most computer languages index starting at 0, R follows standard mathematical notation where vectors are indexed beginning at 1. 
+
+```{r}
+z <- c(1, -1, 2,0)
+z[2:3]
+```
+
+Zero vectors are vectors with all elements equal to 0. 
+
+```{r}
+zeros <- rep(0, 4)
+zeros
+```
+Unsurprisingly, the Ones vector is a vector with all elements equal to 1 
+
+```{r}
+ones <- rep(1, 4)
+ones
+```
+
+Sparsity is an attribute of a vector and a vector is said to be sparse if many of its entries are zero. The number of nonzero entries of a n vector is denoted `nnz()`
+
+```{r}
+nnz <- function(vector){
+    return(length(vector[vector == 0]))
+}
+
+nnz(c(1,2,0,0))
+```
+
+### Vector Addition 
+
+Two vectors of the same size can be added together by adding the corresponding elements. This forms a new vector of the same size, called the *sum* of the vectors 
+
+```{r}
+v1 <- c(0,7,3)
+v2 <- c(1,2,0)
+
+v1 + v2
+
+```
+
+Subtraction is a different form of addition so works the same way 
+
+```{r}
+v1 <- c(1,9)
+v2 <- c(1,1)
+
+v1 - v2
+```
+
+Being a computer language R can do something funky when adding different length vectors 
+
+```{r}
+v1 <- c(1,2,3)
+v2 <- c(1,2)
+
+# The result here is due to "recycling" which is occasionally useful, but will lead to incorrect computations if not watched out for. 
+v1 + v2
+```
+
+#### Properties of Vector Addition 
+
+1. Commutative: $a + b = b + a$
+2. Associative: $(a + b) + c = a + (b + c) = a + b + c$
+3. Adding the zero vector leads to to no change in the original vector. 
+4. Subtracting a vector from itself yields the 0 vector 
+
+### Scalar-vector multiplication 
+
+*Scalar multiplication* is when each element of a vector is multiplied by a scalar. A scalar means a number like 1, 46, or 3/5. 
+
+```{r}
+-2*c(1,9,6)
+```
+
+#### Properties 
+
+1. Commutative: $\alpha a = a\alpha$
+2. Associative: $(\beta\gamma)a = \beta(\gamma a)$
+3. If a is a vector, $(\beta + \gamma)a = \beta a + \gamma a$
+```{r}
+(2 + 5)*v1 == 2*v1 + 5*v1
+```
+
+### Inner Product 
+
+The standard *inner product* (aka "dot product") of two n-vectors is defined as the the scalar $a^Tb = a_1b_1 + ... + a_nb_n$ or the sum or the products of corresponding entries. 
+
+```{r}
+innerprod <- function(vec1, vec2){
+    # Note that t() is the transpose function in R
+    return(t(vec1)%*%vec2)
+}
+
+innerprod(c(-1,2,2), c(1,0,-3))
+```
+
+#### Properties 
+
+1. Commutativity: $a^Tb = b^Ta$. This means that order does not matter for the arguments in the inner product. 
+2. Associatitivy with scalar multiplication: $(\gamma a)^Tb = \gamma(a^Tb) = \gamma a^Tb$
+3. Distributivity with vector additions $(a + b)^Tc = a^Tc + b^Tc$
+4. "Expand the product": $(a + b)^T(c+d) = a^Tc + a^Td + b^Tc + b^Td$. Note that on the left hand side the "+" means vector addition and on the right the sums means scalar addition. 
+
+For block vectors, if vectors *a* and *b* are block vectors and the corresponding blocks have the same size (they're conformable) then: $a^Tb = a_1^Tb_1 + ... a_k^Tb_k$
+
+The inner product of the block vectors is the sum of the inner products of the block. 
+
+```{r}
+#We can use our inner product function to calculate co-cocurrances of two vectors 
+# The number of objects in both A and B 
+innerprod(c(0,1,1,1,1,1,1), c(1,0,1,0,1,0,0))
+```
+An example of where the inner product can be useful is giving the expected value of a quantity 
+
+```{r}
+exp_value <- function(probabilities, values){
+    return(innerprod(probabilities, values))
+}
+values <- c(-1, 0, 5000)
+probabilities <- c(.80, .15, .05)
+
+exp_value(probabilities, values)
+
+
+```
+### Exercises
+
+Suppose a class grade is determined by 10 assignments, where 8 are homework assignments on a 0-10 scale, one is a midterm on a 0-120 scale, and one is a final on a 0-160. The student's total course grade is a weighted average on a 0-100 scale is based on 25% homework, 35% midterm and 40% final. 
+
+```{r}
+calculate_course_grade <- function(hw, mid, final, scale){
+    # We'll assume that scale is the weights 
+    # which go in homework, midterm, final order 
+    
+    # Convert homework to 0-100 scale 
+    # Because there are 8 assignments, we need 10/8
+    # as a weight 
+    hw_sum <- sum(10/8 * hw)
+    
+    # Convert midterm to 0-100 scale 
+    # Midterm grade is out of 120 
+    mid <- 100/120 * mid 
+    
+    # Convert final to 0-100 scale 
+    # Final Grade is out of 160 
+    final <- 100/160 * final 
+    grades <- c(hw_sum, mid, final )
+    
+    # put into grade order 
+    return(innerprod(grades, scale))
+}
+
+hw <- c(8,9, 5, rep(10,4))
+mid <- 90
+final <- 130
+scale <- c(.25, .35, .4)
+calculate_course_grade(hw, mid, final, scale)
+
+```
+#### Notes 
+
+In R, we can use `crossproduct()` instead of our inner product function. 
