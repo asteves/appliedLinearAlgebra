@@ -206,3 +206,88 @@ calculate_course_grade(hw, mid, final, scale)
 #### Notes 
 
 In R, we can use `crossproduct()` instead of our inner product function. 
+
+## Chapter 2: Linear Functions 
+
+### Defining Linear and Affine Functions 
+$f:R^n \rightarrow R$ means that $f$ is a function that maps real n-vectors to real numbers. A function $f:R^n \rightarrow R$ must specify what value $f$ takes for any possible argument $x \in R^n$
+
+If $x$ is an n-vector then $f(x)$ which is a scalar denotes the *value* of the function $f$ at $x$. 
+
+We can also interpret $f$ as a function of n scalar arguments in which case $f(x) = f(x_1,..., x_n)$.
+
+**The Inner product function**: Suppose $a$ is an n-vector, then the inner product function for any n-vector x is: $f(x) = a^Tx = a_1x_1 +...+a_nx_n$. 
+
+- We can think of $f$ as a weighted sum of the elements of x where the elements of a give the weights.
+- Note that if a function is linear then it can be expressed as the inner product of its argument with some fixed vector
+
+**Superposition and Linearity**: The inner product function satisfies 
+
+$$\begin{aligned}
+f(\alpha x + \beta y) &= a^T(\alpha x + \beta y) \\
+f(\alpha x + \beta y) &= a^T(\alpha x) + a^T(\beta y) \\
+f(\alpha x + \beta y) &= \alpha(a^T) + \beta(a^Ty) \\
+f(\alpha x + \beta y) &= \alpha f(x) + \beta f(y) \\
+\end{aligned}$$
+
+for all n-vectors x, y and all scalars $\alpha, \beta$. This property is called *superposition*. Any function that has this property is called *linear*. 
+
+Superposition can be broken down into two properties. A function $f: R^n \rightarrow R$ is linear if it satisfies: 
+
+- Homogeneity: For any n-vector x and any scalar $\alpha$ $f(\alpha x) = \alpha f(x)$. 
+- Additivity: For any n-vectors x, y: $f(x+y) = f(x) + f(y)$
+
+**Affine Function**: A linear function plus a constant. Formally, a function $f: R^n \rightarrow R$ is affine $iff$ it can be expressed $f(x) = a^Tx + b$ for some n-vector a and scalar b. 
+
+- b is sometimes called the offset
+- Any affine scalar valued function satisfies the variation on superposition $f(\alpha x + \beta y) = \alpha f(x) + \beta f(y)$ for all n-vectors x,y, and all scalars $\alpha, \beta$ that satisfy $\alpha + \beta = 1$
+    - For linear functions superposition holds for any coefficient pair $\alpha, \beta$
+    
+### Taylor Approximation 
+
+**Taylor Approximation**: Suppose that $f: R^n \rightarrow R$ is differentiable (its partial derivatives exist). Let $z$ be an n-vector. The first order *Taylor Approximation* of $f$ near the point $z$ is the function $\hat{f}(x)$ defined as: 
+
+$\hat{f}(x) = f(z) + \frac{\partial f}{\partial x_1}(z)(x_1 - z_1) + ... \frac{\partial f}{\partial x_n}(z)(x_n - z_n)$
+
+- A Taylor approximation is an affine function of x 
+- Compact notation with inner product notation as $\hat{f}(x) = f(z) + \nabla f(z)^T(x-z)$ where $\nabla f(z)$ is the gradient of $f$ as the point z. 
+- With this notation we see that the first term is the constant $f(z)$ which is the value of the function when x = z. The second term is the inner product of the gradient of f at z and the deviation or perturbation of x from z (e.g. x - z)
+
+```{r}
+
+# consider f(x) = x1 + exp(x2-x1). Taylor approximation near the point z = 1,2
+# Taylor definition f(z) + \nabla f(z)^T(x -z)
+taylor <- function(x,y){
+    # partials
+    p1 <- 1 - exp(y-x)
+    p2 <- exp(y-x)
+    # Taylor expansion
+    fhat <- x + exp(y-x) + t(c(p1, p2))%*%(c(x-1, y-2))
+    fhat
+}
+
+x <- c(1,0.96, 1.10, 0.85, 1.25)
+y <- c(2, 1.98, 2.11, 2.05, 2.41)
+
+for(i in 1:length(x)){
+    print(taylor(x[i],y[i]))
+}
+```
+
+### Regression Model 
+
+The affine function of x $\hat{y} = x^T\beta + v$ where $\beta$ is an n-vector and $v$ is a scalar is called a *regression model* 
+
+- $\beta_i$ is the amount by which $\hat{y}$ changes when feature $i$ increases by 1, holding all other features the same. 
+-  $v$ is the value of the $\hat{y}$ when all features have value 0 
+
+We can use vector stacking to put the weights and offset into a single parameter vector. 
+
+$\hat{y} = x^Tb + v = \begin{bmatrix} 1 \\ x  \end{bmatrix}^T \begin{bmatrix} v \\ \beta  \end{bmatrix} = \tilde{x}^T\tilde{\beta}$ 
+
+where the first feature always has the value 1. This constant guarantees an intercept. 
+
+### Exericses 
+
+
+
