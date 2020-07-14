@@ -622,6 +622,122 @@ for(i in 1:length(x)){
 <h3>Exericses</h3>
 </div>
 </div>
+<div id="chapter-3-norm-and-distance" class="section level2">
+<h2>Chapter 3: Norm and distance</h2>
+<p><strong>Norm</strong>: The Euclidean norm of an n-vector <em>x</em> denoted <span class="math inline">\(||x||\)</span> is the square root of the sum of the squares of its elements.</p>
+<p><span class="math display">\[\begin{aligned}
+||x|| = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
+\end{aligned}\]</span></p>
+<p>As an example <span class="math inline">\(||\begin{bmatrix} 2 \\ -1 \\2 \end{bmatrix}|| = \sqrt{9} = 3\)</span></p>
+<pre class="r"><code>norm &lt;- function(vec){
+    return(sqrt(sum(vec^2)))
+}
+
+norm(c(2,-1,2))</code></pre>
+<pre><code>## [1] 3</code></pre>
+<div id="properties-of-norm" class="section level5">
+<h5>Properties of norm</h5>
+<ul>
+<li>Nonnegative homogeneity. <span class="math inline">\(||\beta x|| = |\beta|||x||\)</span>. Multiplying a vector by a scalar multiplies the norm by the absolute value of the scalar.</li>
+<li>Triangle inequality. <span class="math inline">\(||x + y || \leq ||x|| + ||y||\)</span>. The norm of a sum of two vectors is no more than the sum of the norms.
+<ul>
+<li>Also known as subadditivity.</li>
+</ul></li>
+<li>Nonnegativity. <span class="math inline">\(||x|| &gt; 0\)</span>$</li>
+<li>Definiteness. <span class="math inline">\(||x|| = 0 \iff x = 0\)</span></li>
+</ul>
+<p><strong>Root Mean Square Value</strong> The norm is related the RMSE value of an n-vector x is defined as <span class="math inline">\(\sqrt{\frac{x_1^2 + ... + x_n^2}{n}} = \frac{||x||}{\sqrt{n}}\)</span></p>
+<p><strong>Norm of a sum</strong>. The norm of a sum of two vectors x and y</p>
+<p><span class="math display">\[\begin{aligned}
+||x + y ||^2 &amp;= (x+y)^T(x+y) \\
+||x + y ||^2 &amp;= x^Tx + x^ty + y^Tx + y^Ty \\
+||x + y ||^2 &amp;= ||x||^2 + 2x^Ty + ||y||^2 \\
+||x + y || &amp;= \sqrt{||x||^2 + 2x^Ty + ||y||^2}
+\end{aligned}\]</span></p>
+<p><strong>Norm of blocked vectors</strong>. For the block vector d = (a,b,c) where a,b,c are vectors.</p>
+<p><span class="math inline">\(||(a,b,c)|| = \sqrt{||a||^2 + ||b||^2 + ||c||^2} = (||a||, ||b||, ||c||) = ||d||\)</span></p>
+<p>In words, the norm of a stacked vector is the norm of the vector formed by the norms of the subvectors.</p>
+<p><strong>Chebyshev’s Inequality</strong>. Suppose that x is an n-vector and that k of its entries satisfy <span class="math inline">\(|x_i| \geq a, a &gt; 0\)</span>. Then k of its entries satisfy <span class="math inline">\(x_i^2 \geq a^2\)</span>.</p>
+<p>It follows from this that <span class="math inline">\(||x||^2 \geq ka^2\)</span> since k of the numbers in the sum are at least <span class="math inline">\(a^2\)</span> and the other n-k numbers are nonnegative.</p>
+<p>We conclude from this Chebyshev’s Inequality <span class="math inline">\(k \leq \frac{||x||^2}{a^2}\)</span>. An alternative way to write this is <span class="math inline">\(\frac{k}{n} \leq (\frac{rms(x)}{a})^2\)</span> where k is the number of entries of x with absolute value at least a. The LHS is the fraction of entries of the vector that are at least a in absolute value.</p>
+</div>
+<div id="distance" class="section level3">
+<h3>Distance</h3>
+<p><strong>Euclidean Distance</strong>: dist(a,b) = <span class="math inline">\(||a - b||\)</span>.</p>
+<p>As an example consider the following. <span class="math inline">\(u = \begin{bmatrix} 1.8 \\ 2.0 \\ -3.7 \\ 4.7 \end{bmatrix}\)</span>, <span class="math inline">\(v = \begin{bmatrix} 0.6 \\ 2.1 \\ 1.9 \\ -1.4 \end{bmatrix}\)</span>, <span class="math inline">\(w = \begin{bmatrix} 2.0 \\ 1.9 \\ -4.0 \\ 4.6 \end{bmatrix}\)</span>.</p>
+<p>Then, the distances between pairs are <span class="math inline">\(||u - v|| = 8.368\)</span>, <span class="math inline">\(||u - w|| = 0.387\)</span>, and <span class="math inline">\(||v - w|| = 8.533\)</span></p>
+</div>
+<div id="standard-deviation" class="section level3">
+<h3>Standard Deviation</h3>
+<p><strong>De-meaned vector</strong>: For any vector x, the vector <span class="math inline">\(\tilde{x} = x - avg(x)\textbf{1}\)</span> is the de-meaned vector.</p>
+<p><strong>Standard Deviation</strong>: The RMS value of the de-meaned vector. Defined as <span class="math inline">\(\sigma_x = \sqrt{\frac{(x_1 - \bar{x})^2 +...+(x_n - \bar{x})^2}{n}}\)</span>.</p>
+<p>We can represent this with inner products as <span class="math inline">\(\sigma_x = \frac{||x - (\textbf{1}^Tx/n)\textbf{1}}{\sqrt{n}}\)</span></p>
+<pre class="r"><code>demean &lt;- function(vec){
+    mean_x &lt;- mean(vec)
+    return(vec - mean_x)
+}
+
+std_dev &lt;- function(vec){
+    demeaned &lt;- demean(vec)^2
+    return(sqrt(sum(demeaned)/length(demeaned)))
+}
+std_dev(c(1,-2,3,2))</code></pre>
+<pre><code>## [1] 1.870829</code></pre>
+<div id="properties-of-standard-deviation" class="section level5">
+<h5>Properties of Standard Deviation</h5>
+<ul>
+<li>Adding a constant to every entry of a vector does not change its standard deviation</li>
+<li>Multiplying a vector by a scalar multiplies the standard deviation by the absolut value of the scalar.</li>
+</ul>
+<p><strong>Standardization</strong> For any de-meaned vector x, dividing by the standard deviation gives us a standardized version of x.</p>
+<p><span class="math inline">\(z = \frac{1}{\sigma_x}(x - \mu_x\textbf{1})\)</span></p>
+</div>
+</div>
+<div id="angle" class="section level3">
+<h3>Angle</h3>
+<p><strong>Cauchy-Schwarz Inequality</strong>: <span class="math inline">\(|a^Tb| \leq ||a|| ||b||\)</span> for any n-vectors a and b.</p>
+<p><strong>Angle between vectors</strong>: The angle between two nonzero vectors a, b is defined by <span class="math inline">\(\theta = arccos(\frac{a^Tb}{||a||||b||})\)</span> where arccos denotes the inverse cosine normalized to lie in the interval <span class="math inline">\([0, \pi]\)</span>.</p>
+<p>This is equivalent to <span class="math inline">\(\theta\)</span> being the unique number in that interval that satisfies <span class="math inline">\(a^Tb = ||a||||b||cos\theta\)</span></p>
+<pre class="r"><code>angle &lt;- function(vec1, vec2){
+    # Angle function calculates radians 
+    return(acos(innerprod(vec1, vec2)/(norm(vec1)*norm(vec2))))
+}
+
+angle(c(1,2,-1), c(2,0,-3))</code></pre>
+<pre><code>##           [,1]
+## [1,] 0.9689826</code></pre>
+<p><strong>Norms of sum via angles</strong>: For vectors x and y:</p>
+<p><span class="math inline">\(||x+y||^2 = ||x||^2 + 2x^Ty + ||y||^2 = ||x||^2 + 2||x||||y||cos\theta + ||y||^2\)</span></p>
+<ul>
+<li>If x and y are aligned <span class="math inline">\(\theta = 0\)</span> then the norms add.</li>
+<li>If x and y are orthogonal, then we have the pythogorean theorem for norms.</li>
+</ul>
+<p><strong>Correlation Coefficient</strong>: Suppose a and b are vectors and we de-mean them. Assuming the de-meaned vectors are not zero, we define the correlation coefficient as.</p>
+<p><span class="math inline">\(\rho = \frac{\tilde{a}^T\tilde{b}}{||\tilde{a}||||\tilde{b}||}\)</span></p>
+<pre class="r"><code>rho &lt;- function(vec1, vec2){
+    vec1_t &lt;- demean(vec1)
+    vec2_t &lt;- demean(vec2) 
+    
+    num &lt;- innerprod(vec1_t, vec2_t)
+    den &lt;- norm(vec1_t)*norm(vec2_t)
+    return(num/den)
+    
+}
+
+rho(c(1,2,3,4), c(4,5,6,7))</code></pre>
+<pre><code>##      [,1]
+## [1,]    1</code></pre>
+<pre class="r"><code>rho(c(1,2,3,4), c(4,7,2,4))</code></pre>
+<pre><code>##            [,1]
+## [1,] -0.3131121</code></pre>
+<p><strong>Standard Deviation of a sum</strong>: <span class="math inline">\(\sigma_{a+b} = \sqrt{\sigma_a^2 + 2\rho\sigma_a\sigma_b + \sigma_b^2}\)</span></p>
+<p>Note when a and b are uncorrelated (<span class="math inline">\(\rho = 0\)</span>) then this reduces to the sum of the standard deviations.</p>
+</div>
+</div>
+<div id="chapter-4-clustering" class="section level2">
+<h2>Chapter 4: Clustering</h2>
+<p><strong>Clustering</strong>: Grouping or partitioning vectors into groups with the vectors in each group close to each other in some way.</p>
+</div>
 
 
 

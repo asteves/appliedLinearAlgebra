@@ -289,5 +289,139 @@ where the first feature always has the value 1. This constant guarantees an inte
 
 ### Exericses 
 
+## Chapter 3: Norm and distance 
 
+**Norm**: The Euclidean norm of an n-vector *x* denoted $||x||$ is the square root of the sum of the squares of its elements. 
 
+$$\begin{aligned}
+||x|| = \sqrt{x_1^2 + x_2^2 + ... + x_n^2}
+\end{aligned}$$
+
+As an example $||\begin{bmatrix} 2 \\ -1 \\2  \end{bmatrix}|| = \sqrt{9} = 3$
+
+```{r}
+norm <- function(vec){
+    return(sqrt(sum(vec^2)))
+}
+
+norm(c(2,-1,2))
+
+```
+##### Properties of norm 
+
+- Nonnegative homogeneity. $||\beta x|| = |\beta|||x||$. Multiplying a vector by a scalar multiplies the norm by the absolute value of the scalar. 
+- Triangle inequality. $||x + y || \leq ||x|| + ||y||$. The norm of a sum of two vectors is no more than the sum of the norms. 
+    - Also known as subadditivity. 
+- Nonnegativity. $||x|| > 0$$
+- Definiteness. $||x|| = 0 \iff x = 0$
+
+**Root Mean Square Value** The norm is related the RMSE value of an n-vector x is defined as $\sqrt{\frac{x_1^2 + ... + x_n^2}{n}} = \frac{||x||}{\sqrt{n}}$
+
+**Norm of a sum**. The norm of a sum of two vectors x and y 
+
+$$\begin{aligned}
+||x + y ||^2 &= (x+y)^T(x+y) \\
+||x + y ||^2 &= x^Tx + x^ty + y^Tx + y^Ty \\
+||x + y ||^2 &= ||x||^2 + 2x^Ty + ||y||^2 \\
+||x + y || &= \sqrt{||x||^2 + 2x^Ty + ||y||^2}
+\end{aligned}$$
+
+**Norm of blocked vectors**. For the block vector d = (a,b,c) where a,b,c are vectors. 
+
+$||(a,b,c)|| = \sqrt{||a||^2 + ||b||^2 + ||c||^2} = (||a||, ||b||, ||c||) = ||d||$
+
+In words, the norm of a stacked vector is the norm of the vector formed by the norms of the subvectors. 
+
+**Chebyshev's Inequality**. Suppose that x is an n-vector and that k of its entries satisfy $|x_i| \geq a, a > 0$. Then k of its entries satisfy $x_i^2 \geq a^2$. 
+
+It follows from this that $||x||^2 \geq ka^2$ since k of the numbers in the sum are at least $a^2$ and the other n-k numbers are nonnegative. 
+
+We conclude from this Chebyshev's Inequality $k \leq \frac{||x||^2}{a^2}$. An alternative way to write this is $\frac{k}{n} \leq (\frac{rms(x)}{a})^2$ where k is the number of entries of x with absolute value at least a. The LHS is the fraction of entries of the vector that are at least a in absolute value. 
+
+### Distance 
+
+**Euclidean Distance**: dist(a,b) = $||a - b||$. 
+
+As an example consider the following. $u = \begin{bmatrix} 1.8 \\ 2.0 \\ -3.7 \\ 4.7 \end{bmatrix}$, $v = \begin{bmatrix} 0.6 \\ 2.1 \\ 1.9 \\ -1.4 \end{bmatrix}$, $w = \begin{bmatrix} 2.0 \\ 1.9 \\ -4.0 \\ 4.6 \end{bmatrix}$. 
+
+Then, the distances between pairs are $||u - v|| = 8.368$, $||u - w|| = 0.387$, and $||v - w|| = 8.533$
+
+### Standard Deviation 
+
+**De-meaned vector**: For any vector x, the vector $\tilde{x} = x - avg(x)\textbf{1}$ is the de-meaned vector. 
+
+**Standard Deviation**: The RMS value of the de-meaned vector. Defined as $\sigma_x = \sqrt{\frac{(x_1 - \bar{x})^2 +...+(x_n - \bar{x})^2}{n}}$. 
+
+We can represent this with inner products as $\sigma_x = \frac{||x - (\textbf{1}^Tx/n)\textbf{1}}{\sqrt{n}}$
+
+```{r}
+demean <- function(vec){
+    mean_x <- mean(vec)
+    return(vec - mean_x)
+}
+
+std_dev <- function(vec){
+    demeaned <- demean(vec)^2
+    return(sqrt(sum(demeaned)/length(demeaned)))
+}
+std_dev(c(1,-2,3,2))
+
+```
+##### Properties of Standard Deviation 
+
+- Adding a constant to every entry of a vector does not change its standard deviation 
+- Multiplying a vector by a scalar multiplies the standard deviation by the absolut value of the scalar. 
+
+**Standardization** For any de-meaned vector x, dividing by the standard deviation gives us a standardized version of x. 
+
+$z = \frac{1}{\sigma_x}(x - \mu_x\textbf{1})$
+
+### Angle 
+
+**Cauchy-Schwarz Inequality**: $|a^Tb| \leq ||a|| ||b||$ for any n-vectors a and b. 
+
+**Angle between vectors**: The angle between two nonzero vectors a, b is defined by $\theta = arccos(\frac{a^Tb}{||a||||b||})$ where arccos denotes the inverse cosine normalized to lie in the interval $[0, \pi]$. 
+
+This is equivalent to $\theta$ being the unique number in that interval that satisfies $a^Tb = ||a||||b||cos\theta$ 
+
+```{r}
+angle <- function(vec1, vec2){
+    # Angle function calculates radians 
+    return(acos(innerprod(vec1, vec2)/(norm(vec1)*norm(vec2))))
+}
+
+angle(c(1,2,-1), c(2,0,-3))
+```
+**Norms of sum via angles**: For vectors x and y: 
+
+$||x+y||^2 = ||x||^2 + 2x^Ty + ||y||^2 = ||x||^2 + 2||x||||y||cos\theta + ||y||^2$ 
+
+- If x and y are aligned $\theta = 0$ then the norms add. 
+- If x and y are orthogonal, then we have the pythogorean theorem for norms. 
+
+**Correlation Coefficient**: Suppose a and b are vectors and we de-mean them. Assuming the de-meaned vectors are not zero, we define the correlation coefficient as. 
+
+$\rho = \frac{\tilde{a}^T\tilde{b}}{||\tilde{a}||||\tilde{b}||}$ 
+
+```{r}
+rho <- function(vec1, vec2){
+    vec1_t <- demean(vec1)
+    vec2_t <- demean(vec2) 
+    
+    num <- innerprod(vec1_t, vec2_t)
+    den <- norm(vec1_t)*norm(vec2_t)
+    return(num/den)
+    
+}
+
+rho(c(1,2,3,4), c(4,5,6,7))
+rho(c(1,2,3,4), c(4,7,2,4))
+```
+
+**Standard Deviation of a sum**: $\sigma_{a+b} = \sqrt{\sigma_a^2 + 2\rho\sigma_a\sigma_b + \sigma_b^2}$
+
+Note when a and b are uncorrelated ($\rho = 0$) then this reduces to the sum of the standard deviations. 
+
+## Chapter 4: Clustering 
+
+**Clustering**: Grouping or partitioning vectors into groups with the vectors in each group close to each other in some way. 
