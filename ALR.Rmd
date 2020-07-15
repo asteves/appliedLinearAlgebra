@@ -425,3 +425,28 @@ Note when a and b are uncorrelated ($\rho = 0$) then this reduces to the sum of 
 ## Chapter 4: Clustering 
 
 **Clustering**: Grouping or partitioning vectors into groups with the vectors in each group close to each other in some way. 
+
+## Chapter 5: Linear Independence 
+
+### Linear Dependence and Independence 
+
+**Linear Dependence**: A collection of n-vectors $a_1, a_2,..., a_k$ with $k\geq1$ is linearly dependent if $\beta_1a_1 + ... + \beta_ka_k = 0$ holds from some $\beta_1,..., \beta_k$ that are not all zero. 
+
+- When a collection of vectors are linearly dependent, at least one vector can be expressed as a linear combination of the other vectors. 
+
+**Linear Independence** The above definition only holds for when $\beta_1 = \beta_2 = ... = \beta_k = 0$. E.g. the only linear combination of vectors that equals the zero vector is the linear combination with all coefficients = 0. 
+
+**Linear Combination of Independent Vectors**: Suppose we have a vector *x* that is a linear combination of $a_1,..., a_k$. When the vectors $a_1,...,a_k$ are linearly independent then the coefficients that form x are unique. 
+
+### Basis 
+
+**Independence-dimension inequality**: If n-vectors $a_1,...,a_k$ are linearly independent then $k \leq n$. 
+
+- In words "A linearly independent collection of n-vectors can have at most n elements." 
+
+**Basis**: A collection of linearly independent n-vectors. 
+
+- If the n-vectors $a_1, ..., a_n$ are a basis then any n-vector $b$ can be written as a linear combination of them. 
+- Since we know any linear combination of linearly independent vectors can only be expressed in one way we have the implication that *any n-vector $b$ can be written in a unique way as a linear combination of a basis $a_1,...,a_n$* 
+
+## Chapter 6: Matrices 
