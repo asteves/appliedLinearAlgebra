@@ -368,6 +368,36 @@ summary {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#chapter-1-vectors">Chapter 1: Vectors</a><ul>
+<li><a href="#vector-addition">Vector Addition</a></li>
+<li><a href="#scalar-vector-multiplication">Scalar-vector multiplication</a></li>
+<li><a href="#inner-product">Inner Product</a></li>
+<li><a href="#exercises">Exercises</a></li>
+</ul></li>
+<li><a href="#chapter-2-linear-functions">Chapter 2: Linear Functions</a><ul>
+<li><a href="#defining-linear-and-affine-functions">Defining Linear and Affine Functions</a></li>
+<li><a href="#taylor-approximation">Taylor Approximation</a></li>
+<li><a href="#regression-model">Regression Model</a></li>
+<li><a href="#exericses">Exericses</a></li>
+</ul></li>
+<li><a href="#chapter-3-norm-and-distance">Chapter 3: Norm and distance</a><ul>
+<li><a href="#distance">Distance</a></li>
+<li><a href="#standard-deviation">Standard Deviation</a></li>
+<li><a href="#angle">Angle</a></li>
+</ul></li>
+<li><a href="#chapter-4-clustering">Chapter 4: Clustering</a></li>
+<li><a href="#chapter-5-linear-independence">Chapter 5: Linear Independence</a><ul>
+<li><a href="#linear-dependence-and-independence">Linear Dependence and Independence</a></li>
+<li><a href="#basis">Basis</a></li>
+</ul></li>
+<li><a href="#chapter-6-matrices">Chapter 6: Matrices</a><ul>
+<li><a href="#transpose-addition-norm">Transpose, Addition, Norm</a></li>
+<li><a href="#matrix-vector-multiplication">Matrix-vector Multiplication</a></li>
+</ul></li>
+</ul>
+</div>
 
 <div id="chapter-1-vectors" class="section level2">
 <h2>Chapter 1: Vectors</h2>
@@ -764,6 +794,124 @@ rho(c(1,2,3,4), c(4,5,6,7))</code></pre>
 </div>
 <div id="chapter-6-matrices" class="section level2">
 <h2>Chapter 6: Matrices</h2>
+<p><strong>Matrix</strong>: a rectangular array of numbers written between brackets. The size of a matrix is the number of columns and the number of rows. For example, a matrix with 3 rows and 4 columns is a 3x4 matrix. In general, a matrix of size m x n is called an m x n matrix.</p>
+<pre class="r"><code>mat &lt;- matrix(data = c(0,1,2,3,4,5,6,7,8), nrow = 3, ncol=3)
+mat</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    0    3    6
+## [2,]    1    4    7
+## [3,]    2    5    8</code></pre>
+<p><strong>Square Matrix</strong>: a matrix that has an equal number of rows and columns. <code>mat</code> above is a square matrix.</p>
+<p><strong>Zero Matrix</strong>: A matrix with all elements set to zero</p>
+<pre class="r"><code>zero &lt;- matrix(c(rep(0, 9)), nrow = 3, ncol = 3)
+zero</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    0    0    0
+## [2,]    0    0    0
+## [3,]    0    0    0</code></pre>
+<p><strong>Identity Matrix</strong>: A square matrix with diagonal elements equal to 1 and off diagonal elements equal to 0.</p>
+<pre class="r"><code>identity &lt;- matrix(c(1,0,0,0,1,0,0,0,1), nrow = 3, ncol = 3)
+identity</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    0    0
+## [2,]    0    1    0
+## [3,]    0    0    1</code></pre>
+<p><strong>Diagonal matrix</strong>: A matrix is diagonal if <span class="math inline">\(A_{ij} = 0, \forall i \neq j\)</span></p>
+<pre class="r"><code>diag(identity)</code></pre>
+<pre><code>## [1] 1 1 1</code></pre>
+<p><strong>Triangular Matrix</strong>: A square matrix A is <em>upper triangular</em> if <span class="math inline">\(A_{ij} = 0, i &gt; j\)</span> and is *lower triangular if <span class="math inline">\(A_{ij} = 0, i &lt; j\)</span>.</p>
+<ul>
+<li>Diagonal matrices are both upper and lower triangular.</li>
+</ul>
+<pre class="r"><code>upper.tri(identity)</code></pre>
+<pre><code>##       [,1]  [,2]  [,3]
+## [1,] FALSE  TRUE  TRUE
+## [2,] FALSE FALSE  TRUE
+## [3,] FALSE FALSE FALSE</code></pre>
+<pre class="r"><code>lower.tri(identity)</code></pre>
+<pre><code>##       [,1]  [,2]  [,3]
+## [1,] FALSE FALSE FALSE
+## [2,]  TRUE FALSE FALSE
+## [3,]  TRUE  TRUE FALSE</code></pre>
+<div id="transpose-addition-norm" class="section level3">
+<h3>Transpose, Addition, Norm</h3>
+<p>Like vectors, we can take the transpose of a matrix. Transposing twice returns original matrix.</p>
+<pre class="r"><code>mat_t &lt;- t(mat)
+mat_t</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    0    1    2
+## [2,]    3    4    5
+## [3,]    6    7    8</code></pre>
+<pre class="r"><code>t(mat_t)</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    0    3    6
+## [2,]    1    4    7
+## [3,]    2    5    8</code></pre>
+<p>Two matrices of the same size can be added together. Addition is element-wise.</p>
+<pre class="r"><code>mat + mat</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    0    6   12
+## [2,]    2    8   14
+## [3,]    4   10   16</code></pre>
+<pre class="r"><code>mat - identity</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]   -1    3    6
+## [2,]    1    3    7
+## [3,]    2    5    7</code></pre>
+<p><strong>Properties of Matrix addition</strong></p>
+<ul>
+<li>Commutativity: A + B = B + A</li>
+<li>Associativity: A + (B + C) = (A + B) + C</li>
+<li>Addition with Zero matrix: A + 0 = A</li>
+<li>Transpose of sum: <span class="math inline">\((A + B)^T = A^T + B^T\)</span></li>
+</ul>
+<p>Scalar-matrix multiplication is also elementwise and defined similarly as with vectors</p>
+<pre class="r"><code>-2 * matrix(c(1,9,6,6,3,0), nrow = 3, ncol = 2)</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]   -2  -12
+## [2,]  -18   -6
+## [3,]  -12    0</code></pre>
+<p><strong>Matrix Norm</strong>: The norm of a matrix ||A|| is the square root of the sum of the squares of its entries</p>
+<pre class="r"><code>matrixNorm &lt;- function(mat){
+    a &lt;- 0 
+    for(i in 1:dim(mat)[1]){
+        for(j in 1:dim(mat)[2]){
+            a &lt;- a + mat[i,j]^2
+        }
+    }
+    return(sqrt(a))
+}
+matrixNorm(diag(4))</code></pre>
+<pre><code>## [1] 2</code></pre>
+</div>
+<div id="matrix-vector-multiplication" class="section level3">
+<h3>Matrix-vector Multiplication</h3>
+<p>The matrix vector product y = Ax is the m-vector y with elements <span class="math inline">\(\sum_{k=1}^n A_{ik}x_k\)</span></p>
+<pre class="r"><code>A &lt;- matrix(c(0,-2, 2,1,-1,1), nrow = 2, ncol =3)
+x &lt;- c(2,1,-1)
+A%*%x</code></pre>
+<pre><code>##      [,1]
+## [1,]    3
+## [2,]   -4</code></pre>
+<pre class="r"><code># Get sum of columns 
+t(A)%*%c(1,1)</code></pre>
+<pre><code>##      [,1]
+## [1,]   -2
+## [2,]    3
+## [3,]    0</code></pre>
+<pre class="r"><code># Get average of columns 
+t(A)%*%c(1/3, 1/3)</code></pre>
+<pre><code>##            [,1]
+## [1,] -0.6666667
+## [2,]  1.0000000
+## [3,]  0.0000000</code></pre>
+<p><strong>Linear Dependence of Columns</strong>: The columns of a matrix are linearly dependent (do not have full rank) if <span class="math inline">\(Ax = 0\)</span> for some <span class="math inline">\(x \neq 0\)</span>. The columns of a matrix are linearly independent if <span class="math inline">\(Ax = 0 \implies x = 0\)</span></p>
+<p><strong>Properties of matrix-vector multiplication</strong>:</p>
+<ul>
+<li>multiplication distributes across the vector argument. <span class="math inline">\(A(u + v) = Au + Av\)</span></li>
+<li>multiplication distributes across the matrix argument <span class="math inline">\((A + B)u = Au + Bu\)</span></li>
+</ul>
+</div>
 </div>
 
 

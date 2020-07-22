@@ -2,7 +2,9 @@
 title: "Applied Linear Algebra"
 author: "Alex Stephenson"
 date: "7/3/2020"
-output: html_document
+output: 
+    html_document:
+        toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -450,3 +452,109 @@ Note when a and b are uncorrelated ($\rho = 0$) then this reduces to the sum of 
 - Since we know any linear combination of linearly independent vectors can only be expressed in one way we have the implication that *any n-vector $b$ can be written in a unique way as a linear combination of a basis $a_1,...,a_n$* 
 
 ## Chapter 6: Matrices 
+
+**Matrix**: a rectangular array of numbers written between brackets. The size of a matrix is the number of columns and the number of rows. For example, a matrix with 3 rows and 4 columns is a 3x4 matrix. In general, a matrix of size m x n is called an m x n matrix. 
+
+```{r}
+mat <- matrix(data = c(0,1,2,3,4,5,6,7,8), nrow = 3, ncol=3)
+mat
+```
+
+**Square Matrix**: a matrix that has an equal number of rows and columns. `mat` above is a square matrix. 
+
+**Zero Matrix**: A matrix with all elements set to zero 
+```{r}
+zero <- matrix(c(rep(0, 9)), nrow = 3, ncol = 3)
+zero
+```
+
+**Identity Matrix**: A square matrix with diagonal elements equal to 1 and off diagonal elements equal to 0. 
+
+```{r}
+identity <- matrix(c(1,0,0,0,1,0,0,0,1), nrow = 3, ncol = 3)
+identity
+```
+
+**Diagonal matrix**:  A matrix is diagonal if $A_{ij} = 0, \forall i \neq j$ 
+
+```{r}
+diag(identity)
+```
+
+**Triangular Matrix**: A square matrix A is *upper triangular* if $A_{ij} = 0, i > j$ and is *lower triangular if $A_{ij} = 0, i < j$. 
+
+- Diagonal matrices are both upper and lower triangular. 
+
+```{r}
+upper.tri(identity)
+lower.tri(identity)
+```
+
+### Transpose, Addition, Norm 
+
+Like vectors, we can take the transpose of a matrix. Transposing twice returns original matrix. 
+
+```{r}
+mat_t <- t(mat)
+mat_t
+t(mat_t)
+```
+
+Two matrices of the same size can be added together. Addition is element-wise.  
+
+```{r}
+mat + mat
+mat - identity
+```
+
+**Properties of Matrix addition**
+
+- Commutativity: A + B = B + A 
+- Associativity: A + (B + C) = (A + B) + C 
+- Addition with Zero matrix: A + 0 = A 
+- Transpose of sum: $(A + B)^T = A^T + B^T$
+
+Scalar-matrix multiplication is also elementwise and defined similarly as with vectors 
+
+```{r}
+-2 * matrix(c(1,9,6,6,3,0), nrow = 3, ncol = 2)
+```
+
+**Matrix Norm**: The norm of a matrix ||A|| is the square root of the sum of the squares of its entries 
+
+```{r}
+matrixNorm <- function(mat){
+    a <- 0 
+    for(i in 1:dim(mat)[1]){
+        for(j in 1:dim(mat)[2]){
+            a <- a + mat[i,j]^2
+        }
+    }
+    return(sqrt(a))
+}
+matrixNorm(diag(4))
+```
+
+### Matrix-vector Multiplication 
+
+The matrix vector product y = Ax is the m-vector y with elements $\sum_{k=1}^n A_{ik}x_k$ 
+
+```{r}
+A <- matrix(c(0,-2, 2,1,-1,1), nrow = 2, ncol =3)
+x <- c(2,1,-1)
+A%*%x
+
+# Get sum of columns 
+t(A)%*%c(1,1)
+
+# Get average of columns 
+t(A)%*%c(1/3, 1/3)
+```
+
+**Linear Dependence of Columns**: The columns of a matrix are linearly dependent (do not have full rank) if $Ax = 0$ for some $x \neq 0$. The columns of a matrix are linearly independent if $Ax = 0 \implies x = 0$
+
+**Properties of matrix-vector multiplication**: 
+
+- multiplication distributes across the vector argument. $A(u + v) = Au + Av$
+- multiplication distributes across the matrix argument $(A + B)u = Au + Bu$
+
