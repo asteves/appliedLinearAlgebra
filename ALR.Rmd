@@ -558,3 +558,72 @@ t(A)%*%c(1/3, 1/3)
 - multiplication distributes across the vector argument. $A(u + v) = Au + Av$
 - multiplication distributes across the matrix argument $(A + B)u = Au + Bu$
 
+## Chapter 10: Matrix-matrix multiplication 
+
+It is possible to multiply two matrices with compatible dimensions 
+
+```{r}
+A <- matrix(c(-1.5, 1, 3, -1, 2, 0), nrow = 2, ncol = 3)
+B <- matrix(c(-1, 0, 1, -1, -2, 0), nrow = 3, ncol = 2)
+
+A %*% B
+```
+
+Multiplying by the identity matrix will return the original matrix 
+
+```{r}
+A %*% diag(3)
+```
+
+Note that in general matrix multiplication is not commutative 
+
+```{r}
+A <- matrix(c(1,9,6,3),2,2)
+B <- matrix(c(0,-1, -1, 2), 2, 2)
+
+A%*%B == B%*%A
+
+```
+
+### Properties of Matrix Multiplication 
+
+- Associativity: (AB)C = A(BC). We can write the product as ABC 
+
+```{r}
+C <- matrix(c(2,3,4,5), 2,2)
+
+(A%*%B)%*%C == A%*%(B%*%C)
+
+```
+
+- Associativity with scalar multiplication: $\gamma(AB)=(\gamma A)B$ 
+
+```{r}
+gamma <- 5
+
+gamma* (A%*%B) == (gamma*A)%*%B
+```
+
+- Distributivity with addition: $A(B+C) == (A+B)C = AC + BC$
+
+```{r}
+A%*%(B + C) == A%*%B + A%*%C
+(A + B)%*%C == A%*%C + B%*%C    
+```
+
+- Transpose of product: The transpose of a product is the product of the transposes in opposite order $(AB)^T = B^T A^T$
+
+```{r}
+t((A%*%B)) == t(B)%*%t(A)
+
+```
+
+A fact about inner product and matrix-vector products. If A is m x n, x is an n-vector, and y is an m-vector, then $y^T(Ax) = (y^T A)x = (A^Ty)^Tx$. This means that the inner product of y and Ax is equal to the inner product of x and $A^Ty$
+
+```{r}
+x <- c(2,4) 
+y <- c(5,6)
+
+t(y)%*%(A%*%x) == t((t(A)%*%y))%*%x
+```
+
