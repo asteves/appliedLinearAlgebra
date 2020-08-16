@@ -627,3 +627,26 @@ y <- c(5,6)
 t(y)%*%(A%*%x) == t((t(A)%*%y))%*%x
 ```
 
+**Gram Matrix**: For an m x n matrix A, with columns $a_1,...,a_n$ the matrix product $G= A^TA$. 
+
+- Note, using the transpose of product rule $G^T = (A^TA)^T = (A^T)(A^T) = A^TA = G$
+
+### Matrix Power 
+
+If A is a square matrix then we can note $AA = A^2$ and more generally if k and l are positive integers $A^kA^l = A^{k+l}$
+
+```{r}
+A <- matrix(c(0,1,0,1,0, 1, 0,0,0,0,0,1,1,0,0,0,0,1,0,1, 1,0,01,0,0),5,5)
+A%*%A
+```
+
+### QR Factorization 
+
+With a Gram matrix, we can express the condition that the n-vectors are orthonormal in notation by $A^TA = I$. A square matrix that satisfies this property is called **orthogonal** and its columns are an orthonormal basis. 
+
+PUT IN QR FACTORIZATION R CODE HERE 
+
+```{r}
+# QR Factorization 
+
+```
