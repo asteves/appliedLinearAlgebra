@@ -650,3 +650,140 @@ PUT IN QR FACTORIZATION R CODE HERE
 # QR Factorization 
 
 ```
+
+## Chapter 11: Matrix Inverses 
+
+**Left Inverse**: A matrix X that satisfies $XA = I$ is called a left inverse of A. The matrix is said to be *left invertible* if a left inverse exists. 
+
+- If A has a left inverse C then the columns of A are linearly independent. The converse is also true. A matrix has a left inverse iff its columns are linearly independent.
+
+**Right Inverse**: A matrix A that satisfies $AX = I$ is called a right inverse of A. The matrix is *right invertible* if a right inverse exists. 
+
+- A matrix is right invertible iff its rows are linearly independent. 
+- Only square or wide matrices can be right invertible 
+    - A right inverse can be used to find a solution of a square or underdetermined set of linear equations, for any vector b 
+    
+### Inverse 
+
+If a matrix is left and right invertible then the left and right inverses are unique and equal. When a matrix has both a left and right inverse then it is *nonsingular* 
+
+- Inverible matrices must be square. A matrix A and its inverse (if it exists) satisfies $AA{^-1} = A^{-1}A = I$
+- The square system of linear equations $Ax = b$ with A invertible has the unique solution $x = A^{-1}b$ for any n-vector b. 
+
+For a square matrix the following are equivalent: 
+
+1. A is invertible 
+2. The columns of A are linearly independent 
+3. The rows of A are linearly independent 
+4. A has a left inverse 
+5. A has a right inverse 
+
+```{r}
+# Example invertible matrix 
+
+A <- matrix(c(1,0,-3, -2, 2, -4, 3,2,-4), nrow = 3, ncol = 3)
+round(A%*%solve(A))# floating point prevents this from being exactly zero otherwise 
+```
+
+Triangular matrices with nonzero diagonal elements are invertible 
+
+```{r}
+solve(diag(3)) # note this also shows identity matrix is invertible
+
+```
+
+### Solving linear equations 
+
+#### Back Substitution 
+
+Given a $n \times n$ upper triangular matrix R with nonzero diagonal entries, and an n-vector $b$. 
+
+For $i = n,...,1$, 
+    $x_i = (b_i = R{i, {i+1}}x_{i+1}-...-R_{i,{n}}x_n))/R_{ii}$
+
+For lower triangular matrices with non-zero diagonal elements we can solve using forward substitution, which is the reverse of this process. 
+
+```{r}
+r <- rbind(c(1,2,3),
+           c(0,1,1),
+           c(0,0,2))
+y <- backsolve(r, x <- c(8,4,2))
+y
+
+```
+
+## Chapter 12: Least Squares 
+
+Suppose that the $m \times n$ matrix A is tall so that system of linear equations $Ax = b$ where $b$ is an m-vector is over-determined. Such an equation only has a solution if $b$ is a linear combination of the columns of A. 
+
+- This rarely happens in practice, so we seek an x for which $r = Ax -b$ is as small as possible. $r = Ax -b$ is referred to as the *residual* 
+- The best way to do this is to minimize the norm of the residual $||Ax - b||$ 
+
+Minimizing the norm of a residual and the square of a norm are the same problem, so we minimize $||Ax - b||^2$. 
+
+This approximation is often referred to as *linear least squares regression*
+
+### Solving a Least Squares Problem 
+
+We assume that the columns of A are full rank (e.g. linearly independent)
+
+#### Via Calculus 
+
+Minimizing $||Ax -b ||^2$ must satsify $\frac{\partial f}{\partial x_i} = 0$. 
+We can express this as the vector equation $\nabla f(\hat{x}) = 0$ where the LHS is the gradient of $f$ evaluated at $\hat{x}$. In matrix form this is $\nabla f(\hat{x}) = 2A^T(Ax-b)$. 
+
+We can verify this is true by deriving that from scratch. The least squares object as a sum is $f(x) = ||Ax-b||^2 = \sum_{i=1}^m (\sum_{j=1}^n A_{ij}x_j - b_i)^2$ 
+
+Take the partial derivative of $f$ with respect to $x_k$. Differentiating by terms we get. 
+
+$$\begin{aligned}
+\nabla f(x)_k &= \frac{\partial f}{\partial x_k}(x) \\
+\nabla f(x)_k &= \sum_{i=1}^m 2(\sum_{j=1}^nA_{ij}x_j -b_i)(A_{ik}) \\
+\nabla f(x)_k &= \sum_{i=1}^m 2(A^T)_{ki}(Ax-b)_i \\
+\nabla f(x)_k &=  (2A^T(Ax-b))_k
+\end{aligned}$$
+
+Any minimizer of that must be equal to zero which we can write as $A^TA\hat{x} = A^Tb$. These are the normal equations. Because $A^TA$ is a Gram matrix and we have assumed full rank, it is invertible. This implies. 
+
+$\hat{x} = (A^TA)^{-1}A^Tb$ is the only solution of the normal equations and is therefore unique. 
+
+#### Direct Verification 
+
+We will directly show the proceeding derivation without calculus by showing that for any $x \neq \hat{x}$ we have $||A\hat{x}-b||^2 < ||Ax-b||^2$ and that will establish that $\hat{x}$ is the unique vector that minimizes our problem. 
+
+$$\begin{aligned}
+||Ax-b||^2 &= ||(Ax-A\hat{x}) + (A\hat{x} = b)||^2 \\
+||Ax-b||^2 &= ||Ax-A\hat{x}||^2 + ||A\hat{x} - b||^2 + 2(Ax - A\hat{x})^T(A\hat{x}-b)\\
+||Ax-b||^2 &= ||Ax-A\hat{x}||^2 + ||A\hat{x} - b||^2 + (x-\hat{x})^TA^T(A\hat{x} - b)\\
+||Ax-b||^2 &= ||Ax-A\hat{x}||^2 + ||A\hat{x} - b||^2 + (x-\hat{x})^T(A^TA\hat{x}-A^Tb) \\
+||Ax-b||^2 &= ||Ax-A\hat{x}||^2 + ||A\hat{x} - b||^2 + (x - \hat{x})^T(A^TA\hat{x}- A^Tb) \\
+||Ax-b||^2 &= ||Ax-A\hat{x}||^2 + ||A\hat{x} - b||^2 + (x-\hat{x})0\\
+||Ax-b||^2 &= ||Ax-A\hat{x}||^2 + ||A\hat{x} - b||^2
+\end{aligned}$$
+
+Note that we made use of an inequality by plugging in the normal equations to make the 3rd term disappear. We are left with an equation that shows that $||A\hat{x}-b||^2 \leq ||Ax-b||^2$. To show unique minimization suppose the equality holds exactly. 
+
+$$\begin{aligned}
+||A\hat{x}-b||^2 \leq ||Ax-b||^2 \\
+||A(x-\hat{x})||^2 &= 0 \\
+A(x-\hat{x}) &= 0 
+\end{aligned}$$
+
+Since A has linearly independent columns $x -\hat{x} = 0$. The only $x$ with the equality property is when $x = \hat{x}$ 
+
+**Orthogonality Principle**: The optimal residual is orthogonal to the columns of A and therefore is orthogonal to any linear combination of the columns of A. 
+
+```{r}
+n1 <- c(.97, 1.23, .8, 1.29, 1.1, 0.67, 0.87, 1.1, 1.92, 1.29)
+n2 <- c(1.86, 2.18, 1.24, .98, 1.23, 0.34, 0.26, 0.16, .22, .12)
+n3 <- c(0.41, .53, .62, .51, .69, .54, .62, .48, .71, .62)
+y <- as.matrix(c(rep(1000,10)))
+
+# Note this is just doing the least squares solution. We don't have an intercept here. 
+R <- matrix(cbind(n1, n2, n3),10,3)
+A <-solve(t(R)%*%R)
+beta <- round(A%*%t(R)%*%y)
+beta
+```
+
+## Chapter 13: Least Squares Data Fitting 
